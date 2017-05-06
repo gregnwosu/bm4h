@@ -1,4 +1,7 @@
 import pymc as pm
+from IPython.core.pylabtools import figsize
+from matplotlib import pyplot as plt
+import matplotlib
 
 p_true = 0.05  # remember this is unknown in real life
 # setting up a Bayesian model
@@ -28,3 +31,13 @@ obs = pm.Bernoulli("obs", p, value=occurences, observed=True)
 
 mcmc = pm.MCMC([p, obs])
 mcmc.sample(20000, 1000)
+# I prefer this figsize and font size for working on a retina mac
+figsize(4.5, 3.5)
+matplotlib.rcParams.update({'font.size': 8})
+plt.title("Posterior distribution of $p_A$\n the true effectiveness of site A")
+plt.vlines(p_true, 0, 90, linestyle="-", label="true $p_A$ (unknown)")
+plt.hist(mcmc.trace("p")[:], bins=35, histtype="stepfilled", normed=True)
+plt.xlabel("Value of $p_A$")
+plt.ylabel("Density")
+plt.legend()
+plt.show()

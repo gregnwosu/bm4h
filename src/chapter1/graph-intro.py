@@ -1,3 +1,4 @@
+package chapter1
 import pymc as pm
 import numpy as np
 from matplotlib import pyplot as plt
