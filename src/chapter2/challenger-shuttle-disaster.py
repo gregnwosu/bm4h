@@ -7,7 +7,8 @@ from scipy.stats.mstats import mquantiles
 from separation_plot import separation_plot
 
 # separation_plot:
-# a data visualisation approach to allow graphical comparison of alternate models against each other
+# a data visualisation approach to allow graphical comparison
+# of alternate models against each other
 
 figsize(6.5, 3.5)
 matplotlib.rcParams.update({'font.size': 8})
@@ -223,4 +224,26 @@ for i in range(len(D)):
     print "%.2f                            |  %d" %\
           (posterior_probability[ix[i]], D[ix[i]])
 separation_plot(posterior_probability, D)
+plt.show()
+
+# our temperature dependent model
+
+separation_plot(posterior_probability, D)
+plt.title("Our Bayesian temperature dependent model")
+
+# perfect model
+# (the probability of defect is equal to if a defect occured or not)
+p = D
+separation_plot(p, D)
+plt.title("Perfect model")
+
+# random predictions
+p = np.random.rand(23)
+separation_plot(p, D)
+plt.title("Random model")
+
+# constant model
+constant_prob = 7./23 * np.ones(23)
+separation_plot(constant_prob, D)
+plt.title("Constant Prediction Model")
 plt.show()
