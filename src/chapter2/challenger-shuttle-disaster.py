@@ -4,6 +4,10 @@ from matplotlib import pyplot as plt
 import matplotlib
 import numpy as np
 from scipy.stats.mstats import mquantiles
+from separation_plot import separation_plot
+
+# separation_plot:
+# a data visualisation approach to allow graphical comparison of alternate models against each other
 
 figsize(6.5, 3.5)
 matplotlib.rcParams.update({'font.size': 8})
@@ -156,10 +160,18 @@ plt.xlabel("Probability of defect occurring in o-ring")
 plt.show()
 
 simulated_data = pm.Bernoulli("simulation_data", p)
+# suppose we think we have a good model of the data with parameters"
+# p, alpha and beta
+# we only get to compare data generated from our model with observed data
+# here is our model
+
 simulated = pm.Bernoulli("bernoulli_sim", p)
 N = 10000
+
 mcmc = pm.MCMC([simulated, alpha, beta, observed])
+# lets sample
 mcmc.sample(N)
+# when we sample we get N x 23 , as its a Bernoulli we get a Boolean but we cast it to an int
 simulations = mcmc.trace("bernoulli_sim")[:].astype(int)
 print "shape of simulations array: ", simulations.shape
 plt.title("Simulated datasets using posterior parameters")
@@ -171,8 +183,8 @@ for i in range(4):
         color="k",
         s=50,
         alpha=0.6)
-
 plt.show()
+
 # We wish to asses how good our model is. We do this graphically.
 # The alternative is to use Bayesian P values which are a statistical
 # summary of the model. However its still subjective where
@@ -183,4 +195,32 @@ plt.show()
 # For each model calculate the proportion of times the posterior
 # simulation proposed a value of 1 for a particular temperature - that
 # is estimate
-# P (Defect = 1 | t). This gives the posteriror probability of a defect at ach data point (temperature) in our dataset
+# P (Defect = 1 | t). This gives the posteriror probability of a defect
+# at ach data point (temperature) in our dataset
+
+# first lets generate our data,
+# we will try to test if the model is a good fit from this generated data.
+# calculate the probability from the model (posterior probability)
+# count the number of observations across all samples for each temperature
+# we are doing a column-wise calculation by taking the mean
+# we now have the probability for each temperature
+posterior_probability = simulations.mean(axis=0)
+print "Obs. | Array of Simulated Defects \
+            | Posterior Probability of Defect | Realised Defect"
+for i in range(len(D)):
+    print "%s | %s | %.2f                        |   %d" %\
+        (str(i).zfill(2), str(simulations[:10, i])[:-1] +
+         "...]".ljust(12), posterior_probability[i], D[i])
+
+# we now sort each column by posterior probability
+# here we generate an index of element locations
+# for sorting posterior probability
+ix = np.argsort(posterior_probability)
+# and print out whether the defect was observed against this probability
+print "Posterior probability of defect | Realised defect"
+# we apply i indexing values to posterior probability and observations
+for i in range(len(D)):
+    print "%.2f                            |  %d" %\
+          (posterior_probability[ix[i]], D[ix[i]])
+separation_plot(posterior_probability, D)
+plt.show()
