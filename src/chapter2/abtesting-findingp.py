@@ -15,11 +15,11 @@ N = 1500
 # This is a data-generation step
 occurences = pm.rbernoulli(p_true, N)
 
-print occurences  # Remember : Python treats True == 1 and False == 0
-print occurences.sum()
-print "What is the observed frequency in Group A %.4f" % occurences.mean()
+print (occurences  # Remember : Python treats True == 1 and False == 0)
+print (occurences.sum())
+print ("What is the observed frequency in Group A %.4f" % occurences.mean())
 obsFreqEqTrueFreq = occurences.mean() == p_true
-print "Does observed frequency equal true frequency? %s" % obsFreqEqTrueFreq
+print ("Does observed frequency equal true frequency? %s" % obsFreqEqTrueFreq)
 
 # Having found that the observed frequency from our sample
 # doesn't equal the frequency from which its generated, we refine our model
